@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/user"
+	"runtime"
 	"strconv"
 )
 
@@ -60,6 +61,8 @@ func (s *Base36Url) RedirectHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	usr, _ := user.Current()
 	storage := &Base36Url{}
 	storage.Init(usr.HomeDir + "/shawty/")

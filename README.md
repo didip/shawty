@@ -31,15 +31,15 @@ But this project exists to demonstrate:
     # Processor: 2.26 GHz Intel Core 2 Duo
 
     Concurrency Level:      200
-    Time taken for tests:   9.678 seconds
+    Time taken for tests:   8.512 seconds
     Complete requests:      100000
     Failed requests:        0
     Write errors:           0
     Keep-Alive requests:    100000
-    Total transferred:      16000000 bytes
-    HTML transferred:       1900000 bytes
-    Requests per second:    10333.08 [#/sec] (mean)
-    Time per request:       19.355 [ms] (mean)
-    Time per request:       0.097 [ms] (mean, across all concurrent requests)
-    Transfer rate:          1614.54 [Kbytes/sec] received
+    Total transferred:      16005920 bytes
+    HTML transferred:       1900703 bytes
+    Requests per second:    11747.64 [#/sec] (mean)
+    Time per request:       17.025 [ms] (mean)
+    Time per request:       0.085 [ms] (mean, across all concurrent requests)
+    Transfer rate:          1836.25 [Kbytes/sec] received
     ```
