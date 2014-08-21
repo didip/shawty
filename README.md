@@ -15,7 +15,7 @@ By itself, URL shortening is quite useful.
 
 But this project exists to demonstrate:
 
-* How short [Go](http://golang.org/) & to the point is: 80 lines.
+* How short [Go](http://golang.org/) is: 80 lines.
 
 * How slim Go is: 3MB RAM.
 
