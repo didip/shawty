@@ -1,6 +1,6 @@
 ## URL Shortener Service
 
-This simple service Base36 encodes URL and store them in file system.
+This service encodes URL in base-36 and store them in filesystem.
 
 It has 3 features: shorten, unshorten, and redirect.
 
@@ -8,6 +8,12 @@ It has 3 features: shorten, unshorten, and redirect.
 ### Dependency
 
 `github.com/gorilla/mux`
+
+### Can I use it in production?
+
+You may want to handle the errors better before using it in production.
+
+If you want to scale out beyond 1 server, you can put the data in NFS/Ceph/Gluster.
 
 ### Why?
 
