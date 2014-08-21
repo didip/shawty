@@ -13,7 +13,7 @@ It has 3 features: shorten, unshorten, and redirect.
 
 You may want to handle the errors better before using it in production.
 
-If you want to scale out beyond 1 server, you can put the data in NFS/Ceph/Gluster.
+To scale out beyond 1 server, you can put the data in NFS/Ceph/Gluster.
 
 ### Why?
 
