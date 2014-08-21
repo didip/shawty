@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/user"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -66,9 +66,9 @@ func (s *Base36Url) RedirectHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	usr, _ := user.Current()
+	dir, _ := homedir.Dir()
 	storage := &Base36Url{}
-	storage.Init(filepath.Join(usr.HomeDir, "shawty"))
+	storage.Init(filepath.Join(dir, "shawty"))
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", storage.EncodeHandler).Methods("POST")
