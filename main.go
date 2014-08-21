@@ -25,8 +25,7 @@ func (s *Base36Url) Path(code string) string {
 
 func (s *Base36Url) Save(url string) string {
 	files, _ := ioutil.ReadDir(s.Path(""))
-	numFiles := len(files)
-	code := strconv.FormatUint(uint64(numFiles+1), 36)
+	code := strconv.FormatUint(uint64(len(files)+1), 36)
 
 	ioutil.WriteFile(s.Path(code), []byte(url), 0744)
 	return code
@@ -52,8 +51,7 @@ func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Base36Url) RedirectHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	code := params["code"]
+	code := mux.Vars(r)["code"]
 	url, err := ioutil.ReadFile(s.Path(code))
 
 	if err == nil {
@@ -70,11 +68,11 @@ func main() {
 	r.HandleFunc("/", storage.EncodeHandler).Methods("POST")
 	r.HandleFunc("/dec/{code}", storage.DecodeHandler).Methods("GET")
 	r.HandleFunc("/red/{code}", storage.RedirectHandler).Methods("GET")
+	http.Handle("/", r)
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
-	http.Handle("/", r)
 	http.ListenAndServe(":"+port, nil)
 }
