@@ -30,7 +30,7 @@ But this project exists to demonstrate:
 * How performant Go is:
     ```
     # Command  : ab -n 100000 -c 200 -k http://localhost:8080/dec/4
-    # Processor: 2.26 GHz Intel Core 2 Duo
+    # Processor: 2.26 GHz Intel Core 2 Duo  <-- Crummy 6 years old laptop
 
     Concurrency Level:      200
     Time taken for tests:   8.512 seconds
