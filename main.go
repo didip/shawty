@@ -39,7 +39,7 @@ func (s *Base36Url) EncodeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
-    code := r.URL.Path[len("/dec/"):]
+	code := r.URL.Path[len("/dec/"):]
 	url, err := s.Load(code)
 
 	if err == nil {
@@ -51,7 +51,7 @@ func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Base36Url) RedirectHandler(w http.ResponseWriter, r *http.Request) {
-    code := r.URL.Path[len("/red/"):]
+	code := r.URL.Path[len("/red/"):]
 	url, err := s.Load(code)
 
 	if err == nil {
