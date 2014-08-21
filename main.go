@@ -28,6 +28,10 @@ func (s *Base36Url) Save(url string) string {
 	return code
 }
 
+func (s *Base36Url) Load(code string) ([]byte, error) {
+	return ioutil.ReadFile(filepath.Join(s.Root, code))
+}
+
 func (s *Base36Url) EncodeHandler(w http.ResponseWriter, r *http.Request) {
 	url := r.FormValue("url")
 	if url != "" {
@@ -36,9 +40,8 @@ func (s *Base36Url) EncodeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	code := params["code"]
-	url, err := ioutil.ReadFile(filepath.Join(s.Root, code))
+	code := mux.Vars(r)["code"]
+	url, err := s.Load(code)
 
 	if err == nil {
 		w.Write(url)
@@ -65,7 +68,7 @@ func main() {
 
 	usr, _ := user.Current()
 	storage := &Base36Url{}
-	storage.Init(usr.HomeDir + "/shawty/")
+	storage.Init(filepath.Join(usr.HomeDir, "shawty"))
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", storage.EncodeHandler).Methods("POST")
