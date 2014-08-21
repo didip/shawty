@@ -27,6 +27,8 @@ But this project exists to demonstrate:
 
 * How comprehensive Go standard library is. If `net/http` supports basic pattern matching, this project would be 100% based on standard library.
 
+* How quick it is to get up and running in Go. It took me about 1 hour from start to finish. Writting this README file took longer time.
+
 * How performant Go is:
     ```
     # Command  : ab -n 100000 -c 200 -k http://localhost:8080/dec/4
