@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -33,14 +32,14 @@ func (s *Base36Url) Load(code string) ([]byte, error) {
 }
 
 func (s *Base36Url) EncodeHandler(w http.ResponseWriter, r *http.Request) {
-	url := r.FormValue("url")
+	url := r.PostFormValue("url")
 	if url != "" {
 		w.Write([]byte(s.Save(url)))
 	}
 }
 
 func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
-	code := mux.Vars(r)["code"]
+    code := r.URL.Path[len("/dec/"):]
 	url, err := s.Load(code)
 
 	if err == nil {
@@ -52,7 +51,7 @@ func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Base36Url) RedirectHandler(w http.ResponseWriter, r *http.Request) {
-	code := mux.Vars(r)["code"]
+    code := r.URL.Path[len("/red/"):]
 	url, err := s.Load(code)
 
 	if err == nil {
@@ -70,14 +69,13 @@ func main() {
 	storage := &Base36Url{}
 	storage.Init(filepath.Join(usr.HomeDir, "shawty"))
 
-	r := mux.NewRouter()
-	r.HandleFunc("/", storage.EncodeHandler).Methods("POST")
-	r.HandleFunc("/dec/{code}", storage.DecodeHandler).Methods("GET")
-	r.HandleFunc("/red/{code}", storage.RedirectHandler).Methods("GET")
+	http.HandleFunc("/", storage.EncodeHandler)
+	http.HandleFunc("/dec/", storage.DecodeHandler)
+	http.HandleFunc("/red/", storage.RedirectHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
-	http.ListenAndServe(":"+port, r)
+	http.ListenAndServe(":"+port, nil)
 }
