@@ -53,7 +53,7 @@ func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Base36Url) RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["code"]
-	url, err := ioutil.ReadFile(filepath.Join(s.Root, code))
+	url, err := s.Load(code)
 
 	if err == nil {
 		http.Redirect(w, r, string(url), 301)
