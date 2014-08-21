@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
@@ -32,7 +31,7 @@ func (s *Base36Url) Save(url string) string {
 func (s *Base36Url) EncodeHandler(w http.ResponseWriter, r *http.Request) {
 	url := r.FormValue("url")
 	if url != "" {
-		fmt.Fprintf(w, s.Save(url))
+		w.Write([]byte(s.Save(url)))
 	}
 }
 
@@ -42,9 +41,10 @@ func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
 	url, err := ioutil.ReadFile(filepath.Join(s.Root, code))
 
 	if err == nil {
-		fmt.Fprintf(w, string(url))
+		w.Write(url)
 	} else {
-		fmt.Fprintf(w, "Error: %v", err)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Error: URL Not Found"))
 	}
 }
 
@@ -54,6 +54,9 @@ func (s *Base36Url) RedirectHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err == nil {
 		http.Redirect(w, r, string(url), 301)
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("URL Not Found"))
 	}
 }
 
