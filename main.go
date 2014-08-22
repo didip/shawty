@@ -22,7 +22,6 @@ func (s *Base36Url) Init(root string) {
 func (s *Base36Url) Save(url string) string {
 	files, _ := ioutil.ReadDir(s.Root)
 	code := strconv.FormatUint(uint64(len(files)+1), 36)
-
 	ioutil.WriteFile(filepath.Join(s.Root, code), []byte(url), 0744)
 	return code
 }
@@ -32,17 +31,15 @@ func (s *Base36Url) Load(code string) ([]byte, error) {
 }
 
 func (s *Base36Url) EncodeHandler(w http.ResponseWriter, r *http.Request) {
-	url := r.PostFormValue("url")
-	if url != "" {
+	if url := r.PostFormValue("url"); url != "" {
 		w.Write([]byte(s.Save(url)))
 	}
 }
 
 func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Path[len("/dec/"):]
-	url, err := s.Load(code)
 
-	if err == nil {
+	if url, err := s.Load(code); err == nil {
 		w.Write(url)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
@@ -52,9 +49,8 @@ func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Base36Url) RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Path[len("/red/"):]
-	url, err := s.Load(code)
 
-	if err == nil {
+	if url, err := s.Load(code); err == nil {
 		http.Redirect(w, r, string(url), 301)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
