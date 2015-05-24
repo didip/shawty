@@ -7,9 +7,7 @@ It has 3 features: shorten, unshorten, and redirect.
 
 ### Can I use it in production?
 
-You may want to handle the errors better before using it in production.
-
-To scale out beyond 1 server, you can put the data in NFS/Ceph/Gluster.
+You need to implement a storage that can scale beyond one application server.
 
 
 ### Why?

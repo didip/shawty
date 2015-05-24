@@ -1,73 +1,30 @@
 package main
 
 import (
-	"github.com/mitchellh/go-homedir"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
+
+	"github.com/didip/shawty/handlers"
+	"github.com/didip/shawty/storages"
+	"github.com/mitchellh/go-homedir"
 )
-
-type Base36Url struct {
-	Root string
-}
-
-func (s *Base36Url) Init(root string) {
-	s.Root = root
-	os.MkdirAll(s.Root, 0744)
-}
-
-func (s *Base36Url) Save(url string) string {
-	files, _ := ioutil.ReadDir(s.Root)
-	code := strconv.FormatUint(uint64(len(files)+1), 36)
-	ioutil.WriteFile(filepath.Join(s.Root, code), []byte(url), 0744)
-	return code
-}
-
-func (s *Base36Url) Load(code string) ([]byte, error) {
-	return ioutil.ReadFile(filepath.Join(s.Root, code))
-}
-
-func (s *Base36Url) EncodeHandler(w http.ResponseWriter, r *http.Request) {
-	if url := r.PostFormValue("url"); url != "" {
-		w.Write([]byte(s.Save(url)))
-	}
-}
-
-func (s *Base36Url) DecodeHandler(w http.ResponseWriter, r *http.Request) {
-	code := r.URL.Path[len("/dec/"):]
-
-	if url, err := s.Load(code); err == nil {
-		w.Write(url)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Error: URL Not Found"))
-	}
-}
-
-func (s *Base36Url) RedirectHandler(w http.ResponseWriter, r *http.Request) {
-	code := r.URL.Path[len("/red/"):]
-
-	if url, err := s.Load(code); err == nil {
-		http.Redirect(w, r, string(url), 301)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("URL Not Found"))
-	}
-}
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	dir, _ := homedir.Dir()
-	storage := &Base36Url{}
-	storage.Init(filepath.Join(dir, "shawty"))
+	storage := &storages.Filesystem{}
+	err := storage.Init(filepath.Join(dir, "shawty"))
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
 
-	http.HandleFunc("/", storage.EncodeHandler)
-	http.HandleFunc("/dec/", storage.DecodeHandler)
-	http.HandleFunc("/red/", storage.RedirectHandler)
+	http.Handle("/", handlers.EncodeHandler(storage))
+	http.Handle("/dec/", handlers.DecodeHandler(storage))
+	http.Handle("/red/", handlers.RedirectHandler(storage))
 
 	port := os.Getenv("PORT")
 	if port == "" {
