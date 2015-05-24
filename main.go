@@ -19,7 +19,7 @@ func main() {
 	storage := &storages.Filesystem{}
 	err := storage.Init(filepath.Join(dir, "shawty"))
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatal(err)
 	}
 
 	http.Handle("/", handlers.EncodeHandler(storage))
@@ -30,5 +30,8 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	http.ListenAndServe(":"+port, nil)
+	err = http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
