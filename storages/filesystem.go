@@ -19,7 +19,10 @@ func (s *Filesystem) Init(root string) error {
 }
 
 func (s *Filesystem) Code() string {
+	s.Lock()
 	files, _ := ioutil.ReadDir(s.Root)
+	s.Unlock()
+
 	return strconv.FormatUint(uint64(len(files)+1), 36)
 }
 
