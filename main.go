@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/didip/shawty/handlers"
-	"github.com/didip/shawty/storages"
 	"github.com/mitchellh/go-homedir"
+	"github.com/thomaso-mirodin/shawty/handlers"
+	"github.com/thomaso-mirodin/shawty/storages"
 )
 
 func main() {

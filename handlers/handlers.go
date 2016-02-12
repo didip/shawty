@@ -4,7 +4,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/didip/shawty/storages"
+	"github.com/thomaso-mirodin/shawty/storages"
 )
 
 func EncodeHandler(storage storages.IStorage) http.Handler {
