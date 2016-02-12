@@ -7,7 +7,7 @@ import (
 	"github.com/thomaso-mirodin/shawty/storages"
 )
 
-func EncodeHandler(storage storages.IStorage) http.Handler {
+func EncodeHandler(storage storages.Storage) http.Handler {
 	handleFunc := func(w http.ResponseWriter, r *http.Request) {
 		if url := r.PostFormValue("url"); url != "" {
 			w.Write([]byte(storage.Save(url)))
@@ -17,7 +17,7 @@ func EncodeHandler(storage storages.IStorage) http.Handler {
 	return http.HandlerFunc(handleFunc)
 }
 
-func DecodeHandler(storage storages.IStorage) http.Handler {
+func DecodeHandler(storage storages.Storage) http.Handler {
 	handleFunc := func(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Path[len("/dec/"):]
 
@@ -34,7 +34,7 @@ func DecodeHandler(storage storages.IStorage) http.Handler {
 	return http.HandlerFunc(handleFunc)
 }
 
-func RedirectHandler(storage storages.IStorage) http.Handler {
+func RedirectHandler(storage storages.Storage) http.Handler {
 	handleFunc := func(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Path[len("/red/"):]
 
