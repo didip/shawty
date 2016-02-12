@@ -18,6 +18,13 @@ func (s *Filesystem) Init(root string) error {
 	return os.MkdirAll(s.Root, 0744)
 }
 
+func NewFilesystem(root string) (*Filesystem, error) {
+	s := &Filesystem{
+		Root: root,
+	}
+	return s, os.MkdirAll(s.Root, 0744)
+}
+
 func (s *Filesystem) Code() string {
 	s.mu.Lock()
 	files, _ := ioutil.ReadDir(s.Root)

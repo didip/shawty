@@ -5,21 +5,21 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/thomaso-mirodin/shawty/handlers"
 	"github.com/thomaso-mirodin/shawty/storages"
 )
 
 func main() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	dir, _ := homedir.Dir()
-	storage := &storages.Filesystem{}
-	err := storage.Init(filepath.Join(dir, "shawty"))
+	dir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	path := filepath.Join(dir, "shawty")
+	storage, err := storages.NewFilesystem(path)
+	if err != nil {
+		log.Fatalf("Failed to create filesystem '%s' because '%s'", path, err)
 	}
 
 	http.Handle("/", handlers.EncodeHandler(storage))
