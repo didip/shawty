@@ -10,7 +10,7 @@ import (
 
 type Filesystem struct {
 	Root string
-	sync.RWMutex
+	mu   sync.RWMutex
 }
 
 func (s *Filesystem) Init(root string) error {
@@ -19,9 +19,9 @@ func (s *Filesystem) Init(root string) error {
 }
 
 func (s *Filesystem) Code() string {
-	s.Lock()
+	s.mu.Lock()
 	files, _ := ioutil.ReadDir(s.Root)
-	s.Unlock()
+	s.mu.Unlock()
 
 	return strconv.FormatUint(uint64(len(files)+1), 36)
 }
@@ -29,17 +29,17 @@ func (s *Filesystem) Code() string {
 func (s *Filesystem) Save(url string) string {
 	code := s.Code()
 
-	s.Lock()
+	s.mu.Lock()
 	ioutil.WriteFile(filepath.Join(s.Root, code), []byte(url), 0744)
-	s.Unlock()
+	s.mu.Unlock()
 
 	return code
 }
 
 func (s *Filesystem) Load(code string) (string, error) {
-	s.Lock()
+	s.mu.Lock()
 	urlBytes, err := ioutil.ReadFile(filepath.Join(s.Root, code))
-	s.Unlock()
+	s.mu.Unlock()
 
 	return string(urlBytes), err
 }
