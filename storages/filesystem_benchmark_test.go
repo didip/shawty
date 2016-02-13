@@ -1,19 +1,51 @@
 package storages_test
 
 import (
-	"path/filepath"
+	"math"
 	"testing"
-
-	"github.com/mitchellh/go-homedir"
-	"github.com/thomaso-mirodin/shawty/storages"
 )
 
-func BenchmarkCode(b *testing.B) {
-	dir, _ := homedir.Dir()
-	storage := &Filesystem{}
-	storage.Init(filepath.Join(dir, "shawty"))
+func BenchmarkFilesystemEmptyCode(b *testing.B) {
+	s := setupFilesystemStorage(b)
 
+	url := randString(100)
+
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		storage.Code()
+		s.Code(url)
+	}
+}
+
+func BenchmarkFilesystemSmallCode(b *testing.B) {
+	s := setupFilesystemStorage(b)
+
+	urls := make([]string, 100)
+	urlCount := len(urls)
+
+	for i := 0; i < urlCount; i++ {
+		urls[i] = randString(100)
+		s.Save(urls[i])
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s.Code(urls[i%urlCount])
+	}
+}
+
+func BenchmarkFilesystemLotsCode(b *testing.B) {
+	s := setupFilesystemStorage(b)
+
+	urls := make([]string, int(math.Pow(10, 4)))
+	urlCount := len(urls)
+
+	for i := 0; i < urlCount; i++ {
+		urls[i] = randString(100)
+		s.Save(urls[i])
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s.Code(urls[i%urlCount])
 	}
 }

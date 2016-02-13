@@ -10,6 +10,7 @@ import (
 
 type Filesystem struct {
 	Root string
+	c    uint64
 	mu   sync.RWMutex
 }
 
@@ -19,28 +20,25 @@ func (s *Filesystem) Init(root string) error {
 }
 
 func NewFilesystem(root string) (*Filesystem, error) {
-	s := &Filesystem{
-		Root: root,
+	s := new(Filesystem)
+	return s, s.Init(root)
+}
+
+func (s *Filesystem) Code(url string) string {
+	return strconv.FormatUint(s.c, 36)
+}
+
+func (s *Filesystem) Save(url string) (string, error) {
+	code := s.Code(url)
+
+	s.mu.Lock()
+	err := ioutil.WriteFile(filepath.Join(s.Root, code), []byte(url), 0744)
+	if err == nil {
+		s.c++
 	}
-	return s, os.MkdirAll(s.Root, 0744)
-}
-
-func (s *Filesystem) Code() string {
-	s.mu.Lock()
-	files, _ := ioutil.ReadDir(s.Root)
 	s.mu.Unlock()
 
-	return strconv.FormatUint(uint64(len(files)+1), 36)
-}
-
-func (s *Filesystem) Save(url string) string {
-	code := s.Code()
-
-	s.mu.Lock()
-	ioutil.WriteFile(filepath.Join(s.Root, code), []byte(url), 0744)
-	s.mu.Unlock()
-
-	return code
+	return code, err
 }
 
 func (s *Filesystem) Load(code string) (string, error) {
