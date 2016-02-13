@@ -10,7 +10,12 @@ import (
 func EncodeHandler(storage storages.Storage) http.Handler {
 	handleFunc := func(w http.ResponseWriter, r *http.Request) {
 		if url := r.PostFormValue("url"); url != "" {
-			w.Write([]byte(storage.Save(url)))
+			code, err := storage.Save(url)
+			if err != nil {
+				http.Error(w, err, 500)
+				return
+			}
+			w.Write([]byte(code))
 		}
 	}
 
