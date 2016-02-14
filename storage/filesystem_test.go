@@ -2,12 +2,23 @@ package storages_test
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/thomaso-mirodin/shawty/storages"
 )
+
+func setupFilesystemStorage(t testing.TB) storages.UnnamedStorage {
+	dir, err := ioutil.TempDir("", "BenchmarkFilesystem")
+	assert.Nil(t, err)
+
+	s, err := storages.NewFilesystem(dir)
+	assert.Nil(t, err)
+
+	return s
+}
 
 func TestFilesystemSave(t *testing.T) {
 	s := setupFilesystemStorage(t)
