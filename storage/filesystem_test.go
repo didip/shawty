@@ -1,4 +1,4 @@
-package storages_test
+package storage_test
 
 import (
 	"fmt"
@@ -10,11 +10,11 @@ import (
 	"github.com/thomaso-mirodin/shawty/storage"
 )
 
-func setupFilesystemStorage(t testing.TB) storages.UnnamedStorage {
+func setupFilesystemStorage(t testing.TB) storage.UnnamedStorage {
 	dir, err := ioutil.TempDir("", "BenchmarkFilesystem")
 	assert.Nil(t, err)
 
-	s, err := storages.NewFilesystem(dir)
+	s, err := storage.NewFilesystem(dir)
 	assert.Nil(t, err)
 
 	return s
@@ -43,7 +43,7 @@ func TestFilesystemLoad(t *testing.T) {
 
 func TestFilesystemMultipleLoads(t *testing.T) {
 	s := setupFilesystemStorage(t)
-	fmt.Println(s.(*storages.Filesystem).Root)
+	fmt.Println(s.(*storage.Filesystem).Root)
 
 	urls := make([]string, 100)
 	shorts := make([]string, 100)

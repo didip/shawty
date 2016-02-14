@@ -1,4 +1,4 @@
-package storages_test
+package storage_test
 
 import "math/rand"
 

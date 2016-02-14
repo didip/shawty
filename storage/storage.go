@@ -1,5 +1,5 @@
 // Package storages allows multiple implementation on how to store short URLs.
-package storages
+package storage
 
 type Storage interface {
 	// Load(string) takes a short URL and returns the original full URL by retrieving it from storage
