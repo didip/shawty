@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/thomaso-mirodin/shawty/storages"
+	"github.com/thomaso-mirodin/shawty/storage"
 )
 
 func setupFilesystemStorage(t testing.TB) storages.UnnamedStorage {
@@ -41,26 +41,6 @@ func TestFilesystemLoad(t *testing.T) {
 	assert.Equal(t, url, long)
 }
 
-func TestFilesystemCode(t *testing.T) {
-
-	s := setupFilesystemStorage(t)
-
-	assert.Equal(t, s.Code(randString(10)), "0")
-	assert.Equal(t, s.Code(randString(10)), "0")
-
-	s.Save(randString(10))
-
-	assert.Equal(t, s.Code(randString(10)), "1")
-	assert.Equal(t, s.Code(randString(10)), "1")
-
-	for i := 0; i < 1000; i++ {
-		s.Save(randString(10))
-	}
-
-	assert.Equal(t, s.Code(randString(10)), "rt")
-
-}
-
 func TestFilesystemMultipleLoads(t *testing.T) {
 	s := setupFilesystemStorage(t)
 	fmt.Println(s.(*storages.Filesystem).Root)
@@ -70,9 +50,8 @@ func TestFilesystemMultipleLoads(t *testing.T) {
 	var err error
 	for i := 0; i < len(urls); i++ {
 		urls[i] = randString(10)
-		t.Logf("Saving '%s' to '%s'", urls[i], s.Code(urls[i]))
 		shorts[i], err = s.Save(urls[i])
-		t.Logf("Saved'%s' to '%s'", urls[i], shorts[i])
+		t.Logf("Saved '%s' to '%s'", urls[i], shorts[i])
 		assert.Nil(t, err)
 	}
 
