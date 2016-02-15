@@ -15,5 +15,5 @@ type UnnamedStorage interface {
 type NamedStorage interface {
 	Storage
 	// SaveName takes a name and a url and saves the name to use for saving a url
-	SaveName(name string, url string) (string, error)
+	SaveName(name string, url string) error
 }

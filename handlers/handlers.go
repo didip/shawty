@@ -2,6 +2,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -13,50 +14,95 @@ func Index(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	fmt.Fprintln(w, "Hello world!")
 }
 
-func RedirectHandler(storage storage.Storage) httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		code := ps.ByName("short")
+func GetShortHandler(store storage.Storage) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		code := p.ByName("short")
 
-		url, err := storage.Load(code)
+		url, err := store.Load(code)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintln(w, "URL Not Found.")
 			return
 		}
 
-		http.Redirect(w, r, string(url), http.StatusFound)
+		switch r.Header.Get("Accept") {
+		case "application/json":
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+			err := json.NewEncoder(w).Encode(map[string]string{"short": code, "url": url})
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		case "text/plain":
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			fmt.Fprintln(w, url)
+		default:
+			http.Redirect(w, r, url, http.StatusFound)
+		}
 	}
+
 }
 
-// func UnknownRedirectHandler(storage storages.Unnamed) httprouter.Handler {
-// 	handleFunc := func(w http.ResponseWriter, r *http.Request) {
-// 		if url := r.PostFormValue("url"); url != "" {
-// 			code, err := storage.Save(url)
-// 			if err != nil {
-// 				http.Error(w, err, 500)
-// 				return
-// 			}
-// 			w.Write([]byte(code))
-// 		}
-// 	}
-// }
+func SetShortHandler(store storage.Storage) httprouter.Handle {
+	named, namedOk := store.(storage.NamedStorage)
+	unnamed, unnamedOk := store.(storage.UnnamedStorage)
 
-// 	return http.HandlerFunc(handleFunc)
-// }
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		// Get URL from post params based on Content-Type
+		var (
+			url string
+			err error
+		)
+		switch r.Header.Get("Content-Type") {
+		case "application/json":
+			http.Error(w, "{'error': 'Content-Type of application/json not yet supported'}", http.StatusNotImplemented)
+		default:
+			url = r.PostFormValue("url")
+			if url == "" {
+				http.Error(w, "No URL Provided", http.StatusBadRequest)
+				return
+			}
+		}
 
-// func DecodeHandler(storage storages.Storage) http.Handler {
-// 	handleFunc := func(w http.ResponseWriter, r *http.Request) {
-// 		code := r.URL.Path[len("/dec/"):]
+		// Save URL to the storage layer and get the final short code
+		code := p.ByName("short")
+		if code == "" {
+			if !unnamedOk {
+				http.Error(w, "Current storage layer does not support storing an unnamed url", http.StatusBadRequest)
+				return
+			}
 
-// 		url, err := storage.Load(code)
-// 		if err != nil {
-// 			w.WriteHeader(http.StatusNotFound)
-// 			w.Write([]byte("URL Not Found. Error: " + err.Error() + "\n"))
-// 			return
-// 		}
+			code, err = unnamed.Save(url)
+		} else {
+			if !namedOk {
+				http.Error(w, "Current storage layer does not support storing a named url", http.StatusBadRequest)
+				return
+			}
 
-// 		w.Write([]byte(url))
-// 	}
+			err = named.SaveName(code, url)
+		}
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Storage layer failed to save link: %s", err), http.StatusInternalServerError)
+		}
 
-// 	return http.HandlerFunc(handleFunc)
-// }
+		// Return the short code formatted based on Accept headers
+		switch r.Header.Get("Accept") {
+		case "application/json":
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+			err := json.NewEncoder(w).Encode(map[string]string{"short": code, "url": url})
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		case "text/plain":
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			fmt.Fprintln(w, code)
+		default:
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			fmt.Fprintln(w, code)
+		}
+	}
+
+}
