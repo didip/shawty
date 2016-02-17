@@ -1,7 +1,6 @@
 package storage_test
 
 import (
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"testing"
@@ -43,7 +42,6 @@ func TestFilesystemLoad(t *testing.T) {
 
 func TestFilesystemMultipleLoads(t *testing.T) {
 	s := setupFilesystemStorage(t)
-	fmt.Println(s.(*storage.Filesystem).Root)
 
 	urls := make([]string, 100)
 	shorts := make([]string, 100)

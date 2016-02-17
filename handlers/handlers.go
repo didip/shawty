@@ -41,7 +41,6 @@ func GetShortHandler(store storage.Storage) httprouter.Handle {
 			http.Redirect(w, r, url, http.StatusFound)
 		}
 	}
-
 }
 
 func SetShortHandler(store storage.Storage) httprouter.Handle {
