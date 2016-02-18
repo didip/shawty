@@ -22,3 +22,5 @@ type NamedStorage interface {
 
 var ErrCodeInUse = errors.New("tried to set short, but unable to find a unique shortname")
 var ErrCodeNotSet = errors.New("storage layer doens't have a url for that short code")
+
+// var ErrNameEmpty = errors.New("provided short name isn't valid because it has no length")
