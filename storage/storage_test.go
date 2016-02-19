@@ -120,15 +120,42 @@ func TestLoad(t *testing.T) {
 	}
 }
 
-// func TestNamedStorageNames(t *testing.T) {
-// 	var shortNames map[string]error = map[string]error{
-// 		"simple": nil,
-// 		""
-// 	}
+func TestNamedStorageNames(t *testing.T) {
+	var shortNames map[string]error = map[string]error{
+		"simple":                               nil,
+		"":                                     storage.ErrNameEmpty,
+		"1;DROP TABLE names":                   nil, // A few SQL Injections
+		"';DROP TABLE names":                   nil,
+		"œ∑´®†¥¨ˆøπ“‘":                         nil, // Fancy Unicode
+		"🇺🇸🇦":                                  nil,
+		"社會科學院語學研究所":                           nil,
+		"ஸ்றீனிவாஸ ராமானுஜன் ஐயங்கார்":         nil,
+		"يَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِي": nil,
+		"Po oživlëGromady strojnye tesnâtsâ ":  nil,
+		"Powerلُلُصّبُلُلصّبُررً ॣ ॣh ॣ ॣ冗":    nil, // WebOS Crash
+	}
 
-// 	for name, setupStorage := range storageSetups {
-// 		namedStorage, ok := setupStorage(t).(storage.NamedStorage)
+	testURL := "http://google.com"
 
-// 		namedStorage.SaveName(name, url)
-// 	}
-// }
+	for storageName, setupStorage := range storageSetups {
+		namedStorage, ok := setupStorage(t).(storage.NamedStorage)
+		if !assert.True(t, ok) {
+			continue
+		}
+
+		for short, e := range shortNames {
+			t.Logf("[%s] Saving URL '%s' should result in '%s'", storageName, short, e)
+			err := namedStorage.SaveName(short, testURL)
+			assert.Equal(t, err, e, fmt.Sprintf("[%s] Saving URL '%s' should've resulted in '%s'", storageName, short, e))
+
+			if err == nil {
+				t.Logf("[%s] Loading URL '%s' should result in '%s'", storageName, short, e)
+				url, err := namedStorage.Load(short)
+				assert.Equal(t, err, e, fmt.Sprintf("[%s] Loading URL '%s' should've resulted in '%s'", storageName, short, e))
+
+				assert.Equal(t, url, testURL, "Saved URL shoud've matched")
+			}
+
+		}
+	}
+}

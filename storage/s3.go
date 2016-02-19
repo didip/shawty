@@ -36,6 +36,10 @@ func NewS3(auth aws.Auth, region aws.Region, bucketName string) (*S3, error) {
 }
 
 func (s *S3) Save(url string) (string, error) {
+	if url == "" {
+		return "", ErrURLEmpty
+	}
+
 	var (
 		code string
 		err  error
@@ -56,10 +60,21 @@ func (s *S3) Save(url string) (string, error) {
 }
 
 func (s *S3) SaveName(code string, url string) error {
+	if code == "" {
+		return ErrNameEmpty
+	}
+	if url == "" {
+		return ErrURLEmpty
+	}
+
 	return s.Bucket.Put(code, []byte(url), "text/plain", s3.BucketOwnerFull)
 }
 
 func (s *S3) Load(code string) (string, error) {
+	if code == "" {
+		return "", ErrNameEmpty
+	}
+
 	url, err := s.Bucket.Get(code)
 	if s3err, ok := err.(*s3.Error); ok && s3err.Code == "NoSuchKey" {
 		return "", ErrCodeNotSet

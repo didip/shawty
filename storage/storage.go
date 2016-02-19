@@ -20,7 +20,9 @@ type NamedStorage interface {
 	SaveName(name string, url string) error
 }
 
-var ErrCodeInUse = errors.New("tried to set short, but unable to find a unique shortname")
-var ErrCodeNotSet = errors.New("storage layer doens't have a url for that short code")
-
-// var ErrNameEmpty = errors.New("provided short name isn't valid because it has no length")
+var (
+	ErrCodeInUse  = errors.New("tried to set short, but unable to find a unique shortname")
+	ErrCodeNotSet = errors.New("storage layer doens't have a url for that short code")
+	ErrURLEmpty   = errors.New("provided url is empty")
+	ErrNameEmpty  = errors.New("provided short name is empty")
+)

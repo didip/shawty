@@ -23,6 +23,10 @@ func NewInmem() (*Inmem, error) {
 }
 
 func (s *Inmem) Save(url string) (string, error) {
+	if url == "" {
+		return "", ErrURLEmpty
+	}
+
 	var code string
 
 	s.mu.Lock()
@@ -41,6 +45,13 @@ func (s *Inmem) Save(url string) (string, error) {
 }
 
 func (s *Inmem) SaveName(code string, url string) error {
+	if code == "" {
+		return ErrNameEmpty
+	}
+	if url == "" {
+		return ErrURLEmpty
+	}
+
 	s.mu.Lock()
 	s.m[code] = url
 	s.mu.Unlock()
@@ -48,6 +59,10 @@ func (s *Inmem) SaveName(code string, url string) error {
 }
 
 func (s *Inmem) Load(code string) (string, error) {
+	if code == "" {
+		return "", ErrNameEmpty
+	}
+
 	s.mu.Lock()
 	url, ok := s.m[code]
 	s.mu.Unlock()

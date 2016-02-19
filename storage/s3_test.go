@@ -34,9 +34,9 @@ func cleanupS3Storage() error {
 		s.Bucket.Del(k)
 	}
 
-	if err := s.Bucket.DelBucket(); err != nil {
-		return err
-	}
+	// if err := s.Bucket.DelBucket(); err != nil {
+	// 	return err
+	// }
 
 	return nil
 }

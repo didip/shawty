@@ -29,6 +29,10 @@ func (s *Filesystem) Code(url string) string {
 }
 
 func (s *Filesystem) Save(url string) (string, error) {
+	if url == "" {
+		return "", ErrURLEmpty
+	}
+
 	code := s.Code(url)
 
 	s.mu.Lock()
@@ -42,6 +46,10 @@ func (s *Filesystem) Save(url string) (string, error) {
 }
 
 func (s *Filesystem) Load(code string) (string, error) {
+	if code == "" {
+		return "", ErrNameEmpty
+	}
+
 	s.mu.Lock()
 	urlBytes, err := ioutil.ReadFile(filepath.Join(s.Root, code))
 	s.mu.Unlock()
