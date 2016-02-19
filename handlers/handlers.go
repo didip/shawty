@@ -11,7 +11,7 @@ import (
 )
 
 func Index(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	fmt.Fprintln(w, "Hello world!")
+	fmt.Fprintln(w, mainhtml)
 }
 
 func GetShortHandler(store storage.Storage) httprouter.Handle {

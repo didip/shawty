@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/codegangsta/negroni"
 	"github.com/julienschmidt/httprouter"
@@ -14,15 +13,20 @@ import (
 )
 
 func main() {
-	dir, err := os.Getwd()
+	// dir, err := os.Getwd()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	//
+	// path := filepath.Join(dir, "shawty", "filesystem_db")
+	// store, err := storage.NewFilesystem(path)
+	// if err := err {
+	// 	log.Fatalf("Failed to create filesystem '%s' because '%s'", path, err)
+	// }
+	store, err := storage.NewInmem()
 	if err != nil {
-		log.Fatal(err)
-	}
+		log.Fatalf("Failed to create inmem storage because '%s'", err)
 
-	path := filepath.Join(dir, "shawty", "filesystem_db")
-	store, err := storage.NewFilesystem(path)
-	if err != nil {
-		log.Fatalf("Failed to create filesystem '%s' because '%s'", path, err)
 	}
 
 	n := negroni.Classic()
