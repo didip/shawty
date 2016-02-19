@@ -1,31 +1,27 @@
-[![GoDoc](https://godoc.org/github.com/didip/shawty?status.svg)](http://godoc.org/github.com/didip/shawty)
+[![GoDoc](https://godoc.org/github.com/thomaso-mirodin/go-shorten?status.svg)](http://godoc.org/github.com/thomaso-mirodin/go-shorten)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/didip/shawty/master/LICENSE)
 
-## Shawty: URL Shortener Service
+## go-shorten: URL Shortener Service
 
-This service encodes URL in base-36 and store them in filesystem.
-
-It has 3 features: shorten, unshorten, and redirect.
-
+This service stores and serves URL redirects
 
 ### Can I use it in production?
 
-You need to implement a storage that can scale beyond one application server.
-
+I dunno? I will be at some point.
 
 ### Why?
 
-By itself, URL shortening is quite useful.
+By itself, URL shortening is stupid useful.
 
-But this project exists to demonstrate:
+But this project's parent <https://github.com/didip/shawty> existed to demonstrate:
 
-* How concise [Go](http://golang.org/) is. [cloc](http://cloc.sourceforge.net/) shows that this project contains only 125 lines.
+* How concise [Go](http://golang.org/) is. [cloc](http://cloc.sourceforge.net/) shows that it could do URL shortening in only 125 lines.
 
 * How slim Go is: 3MB RAM.
 
 * How comprehensive Go standard library is.
 
-* How easy it is to get up and running in Go. It took me about 1 hour from start to finish. Writing this README file took longer time.
+* How easy it is to get up and running in Go. It took them about 1 hour from start to finish. Writing this README file took more time.
 
 * How performant Go is:
     ```
