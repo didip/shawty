@@ -10,6 +10,9 @@ import (
 
 func setupS3Storage(t testing.TB) storage.Storage {
 	auth, err := aws.SharedAuth()
+	if err != nil {
+		auth, err = aws.EnvAuth()
+	}
 	require.Nil(t, err)
 
 	s, err := storage.NewS3(auth, aws.USWest2, "databricks-go-shortener-test")
