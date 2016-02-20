@@ -40,3 +40,27 @@ func cleanupS3Storage() error {
 
 	return nil
 }
+
+func BenchmarkS3Save(b *testing.B) {
+	s := setupS3Storage(b)
+	named, ok := s.(storage.NamedStorage)
+	require.True(b, ok)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		named.SaveName("short", "long")
+	}
+}
+
+func BenchmarkS3Load(b *testing.B) {
+	s := setupS3Storage(b)
+	named, ok := s.(storage.NamedStorage)
+	require.True(b, ok)
+
+	named.SaveName("short", "long")
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		named.Load("short")
+	}
+}
