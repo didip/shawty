@@ -8,6 +8,8 @@ import (
 	"github.com/thomaso-mirodin/go-shorten/storage"
 )
 
+var testBucket string = "go-shortener-test"
+
 func setupS3Storage(t testing.TB) storage.Storage {
 	auth, err := aws.SharedAuth()
 	if err != nil {
@@ -15,7 +17,7 @@ func setupS3Storage(t testing.TB) storage.Storage {
 	}
 	require.Nil(t, err)
 
-	s, err := storage.NewS3(auth, aws.USWest2, "databricks-go-shortener-test")
+	s, err := storage.NewS3(auth, aws.USWest2, testBucket)
 	require.Nil(t, err)
 
 	return s
@@ -27,7 +29,7 @@ func cleanupS3Storage() error {
 		return err
 	}
 
-	s, err := storage.NewS3(auth, aws.USWest2, "databricks-go-shortener-test")
+	s, err := storage.NewS3(auth, aws.USWest2, testBucket)
 	if err != nil {
 		return err
 	}
@@ -37,9 +39,9 @@ func cleanupS3Storage() error {
 		s.Bucket.Del(k)
 	}
 
-	// if err := s.Bucket.DelBucket(); err != nil {
-	// 	return err
-	// }
+	if err := s.Bucket.DelBucket(); err != nil {
+		return err
+	}
 
 	return nil
 }
