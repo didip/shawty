@@ -8,8 +8,9 @@ import (
 
 	"github.com/codegangsta/negroni"
 	"github.com/julienschmidt/httprouter"
-	"github.com/thomaso-mirodin/shawty/handlers"
-	"github.com/thomaso-mirodin/shawty/storage"
+	"github.com/mitchellh/goamz/aws"
+	"github.com/thomaso-mirodin/go-shorten/handlers"
+	"github.com/thomaso-mirodin/go-shorten/storage"
 )
 
 func main() {

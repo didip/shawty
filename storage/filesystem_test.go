@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thomaso-mirodin/shawty/storage"
+	"github.com/thomaso-mirodin/go-shorten/storage"
 )
 
 func setupFilesystemStorage(t testing.TB) storage.UnnamedStorage {

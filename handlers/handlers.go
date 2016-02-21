@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/thomaso-mirodin/shawty/storage"
+	"github.com/thomaso-mirodin/go-shorten/storage"
 )
 
 func Index(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/mitchellh/goamz/aws"
 	"github.com/stretchr/testify/require"
-	"github.com/thomaso-mirodin/shawty/storage"
+	"github.com/thomaso-mirodin/go-shorten/storage"
 )
 
 func setupS3Storage(t testing.TB) storage.Storage {
