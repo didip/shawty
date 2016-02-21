@@ -10,10 +10,6 @@ import (
 	"github.com/thomaso-mirodin/go-shorten/storage"
 )
 
-func Index(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	fmt.Fprintln(w, mainhtml)
-}
-
 func GetShortHandler(store storage.Storage) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		code := p.ByName("short")

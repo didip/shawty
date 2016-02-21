@@ -20,10 +20,9 @@ func main() {
 
 	}
 
-	n := negroni.Classic()
+	n := negroni.Classic(negroni.NewStatic(http.Dir("static")))
 
 	r := httprouter.New()
-	r.GET("/", handlers.Index)
 
 	r.GET("/:short", handlers.GetShortHandler(store))
 	r.HEAD("/:short", handlers.GetShortHandler(store))
