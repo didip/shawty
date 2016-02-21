@@ -22,18 +22,18 @@ func main() {
 
 	n := negroni.Classic()
 
-	mux := httprouter.New()
-	mux.GET("/", handlers.Index)
+	r := httprouter.New()
+	r.GET("/", handlers.Index)
 
-	mux.GET("/:short", handlers.GetShortHandler(store))
-	mux.HEAD("/:short", handlers.GetShortHandler(store))
+	r.GET("/:short", handlers.GetShortHandler(store))
+	r.HEAD("/:short", handlers.GetShortHandler(store))
 
-	mux.POST("/", handlers.SetShortHandler(store))
-	mux.PUT("/", handlers.SetShortHandler(store))
-	mux.POST("/:short", handlers.SetShortHandler(store))
-	mux.PUT("/:short", handlers.SetShortHandler(store))
+	r.POST("/", handlers.SetShortHandler(store))
+	r.PUT("/", handlers.SetShortHandler(store))
+	r.POST("/:short", handlers.SetShortHandler(store))
+	r.PUT("/:short", handlers.SetShortHandler(store))
 
-	n.UseHandler(mux)
+	n.UseHandler(r)
 
 	host := os.Getenv("HOST")
 	if host == "" {
