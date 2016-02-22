@@ -1,0 +1,86 @@
+body, input {
+	font-family: 'Lato', sans-serif;
+	font-size: 1.6rem;
+	font-weight: 700;
+}
+
+.send-column {
+	min-width: 86px;
+}
+.go-column {
+	min-width: 44px;
+}
+.code-column {
+	min-width: 195px;
+}
+.to-column {
+	min-width: 23px;
+}
+.url-column {
+	min-width: 284px;
+}
+.button-column {
+	min-width: 128px;
+}
+
+#code:active,
+#code:focus,
+#url:focus,
+#url:active {
+	border-color: #008CCC;
+}
+
+button {
+	background-color: #008CCC;
+	border-color: #008CCC;
+}
+
+#link {
+	color: #008CCC;
+}
+#link:hover {
+	color: #6ED2FF;
+}
+
+.container {
+	padding-top: 7.5rem;
+	margin-bottom: 0;
+	max-width: 80.0rem;
+	margin-left: 0;
+}
+
+label {
+	line-height: 2.4em;
+}
+
+.collapse-padding {
+	padding: 0 !important;
+}
+
+.centered {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.short-link {
+	padding-top: 0;
+}
+#link-container {
+	max-height: 0;
+	overflow: hidden;
+
+	/* Set our transitions up. */
+	-webkit-transition: max-height 0.8s;
+	-moz-transition: max-height 0.8s;
+	transition: max-height 0.8s;
+}
+#link-container.visible {
+	max-height: 250px;
+}
+
+#code {
+	width: 223px;
+	position: absolute;
+	left: 102px;
+	padding-left: 32px;
+}
