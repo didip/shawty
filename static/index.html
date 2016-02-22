@@ -7,9 +7,9 @@
     <title>Go Shorten Things!</title>
 </head>
 <script type="text/javascript">
-var shorten = function(url) {
+var shorten = function(url, short_url) {
     $.ajax({
-        url: "/",
+        url: "/" + short_url,
         method: "POST",
         data: {
             url: url
@@ -30,7 +30,8 @@ var shorten = function(url) {
 }
 var shortenUrl = function() {
     var url = $("#url").val();
-    shorten(url);
+    var short_url = $("#short_url").val();
+    shorten(url, short_url);
     return false;
 }
 $(function() {
@@ -44,6 +45,7 @@ $(function() {
     <div class="col-lg-6" style="width:500px;">
         <div class="input-group">
             <form onsubmit="return shortenUrl()">
+                <input id="short_url" type="text" class="form-control" placeholder="Enter short url...">
                 <input id="url" type="text" class="form-control" placeholder="Enter long url...">
             </form>
             <span class="input-group-btn">
