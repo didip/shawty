@@ -9,22 +9,17 @@ type S3 struct {
 	Bucket *s3.Bucket
 }
 
-func (s *S3) Init(auth aws.Auth, region aws.Region, bucketName string) error {
-	client := s3.New(auth, region)
-
-	s.Bucket = client.Bucket(bucketName)
+func NewS3(auth aws.Auth, region aws.Region, bucketName string) (*S3, error) {
+	s := &S3{
+		Bucket: s3.New(auth, region).Bucket(bucketName),
+	}
 
 	_, err := s.Bucket.GetBucketContents()
 	if s3err, ok := err.(*s3.Error); ok && s3err.Code == "NoSuchBucket" {
 		err = s.Bucket.PutBucket(s3.BucketOwnerFull)
 	}
 
-	return err
-}
-
-func NewS3(auth aws.Auth, region aws.Region, bucketName string) (*S3, error) {
-	s := new(S3)
-	return s, s.Init(auth, region, bucketName)
+	return s, err
 }
 
 func (s *S3) Save(url string) (string, error) {

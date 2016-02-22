@@ -14,14 +14,11 @@ type Filesystem struct {
 	mu   sync.RWMutex
 }
 
-func (s *Filesystem) Init(root string) error {
-	s.Root = root
-	return os.MkdirAll(s.Root, 0744)
-}
-
 func NewFilesystem(root string) (*Filesystem, error) {
-	s := new(Filesystem)
-	return s, s.Init(root)
+	s := &Filesystem{
+		Root: root,
+	}
+	return s, os.MkdirAll(s.Root, 0744)
 }
 
 func (s *Filesystem) Code(url string) string {

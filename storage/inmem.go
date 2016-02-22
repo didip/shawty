@@ -9,17 +9,13 @@ type Inmem struct {
 	mu sync.RWMutex
 }
 
-func (s *Inmem) Init() error {
-	s.mu.Lock()
-	s.m = make(map[string]string)
-	s.RandLength = 8
-	s.mu.Unlock()
-	return nil
-}
-
 func NewInmem() (*Inmem, error) {
-	s := new(Inmem)
-	return s, s.Init()
+	s := &Inmem{
+		RandLength: 8,
+
+		m: make(map[string]string),
+	}
+	return s, nil
 }
 
 func (s *Inmem) Save(url string) (string, error) {
