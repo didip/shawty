@@ -53,8 +53,8 @@ func CleanPath(path string) string {
 }
 
 // Takes a possibly multilevel path and flattens it by dropping any slashes
-func FlattenPath(path string, separator string) {
-	return strings.Replace(path, os.PathSeparator, separator, -1)
+func FlattenPath(path string, separator string) string {
+	return strings.Replace(path, string(os.PathSeparator), separator, -1)
 }
 
 func (s *Filesystem) SaveName(short, long string) error {
