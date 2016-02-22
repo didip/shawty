@@ -20,7 +20,7 @@ func main() {
 
 	}
 
-	n := negroni.Classic(negroni.NewStatic(http.Dir("static")))
+	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger(), negroni.NewStatic(http.Dir("static")))
 
 	r := httprouter.New()
 
