@@ -8,7 +8,6 @@ import (
 
 	"github.com/codegangsta/negroni"
 	"github.com/julienschmidt/httprouter"
-	"github.com/mitchellh/goamz/aws"
 	"github.com/thomaso-mirodin/go-shorten/handlers"
 	"github.com/thomaso-mirodin/go-shorten/storage"
 )

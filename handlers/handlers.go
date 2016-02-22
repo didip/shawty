@@ -47,6 +47,7 @@ func SetShortHandler(store storage.Storage) httprouter.Handle {
 		// Get URL from post params based on Content-Type
 		var (
 			url string
+			code string
 			err error
 		)
 		switch r.Header.Get("Content-Type") {
@@ -58,10 +59,14 @@ func SetShortHandler(store storage.Storage) httprouter.Handle {
 				http.Error(w, "No URL Provided", http.StatusBadRequest)
 				return
 			}
+
+			code = r.PostFormValue("code")
+			if code == "" {
+				// Save URL to the storage layer and get the final short code
+				code = p.ByName("short")
+			}
 		}
 
-		// Save URL to the storage layer and get the final short code
-		code := p.ByName("short")
 		if code == "" {
 			if !unnamedOk {
 				http.Error(w, "Current storage layer does not support storing an unnamed url", http.StatusBadRequest)
@@ -91,6 +96,9 @@ func SetShortHandler(store storage.Storage) httprouter.Handle {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+		case "text/html":
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			fmt.Fprintln(w, "<html>hello world</html")
 		case "text/plain":
 			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 			fmt.Fprintln(w, code)
