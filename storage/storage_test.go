@@ -43,8 +43,9 @@ func saveSomething(s storage.Storage) (short string, long string, err error) {
 }
 
 var storageSetups = map[string]func(testing.TB) storage.Storage{
-	"Inmem": setupInmemStorage,
-	"S3":    setupS3Storage,
+	"Inmem":      setupInmemStorage,
+	"S3":         setupS3Storage,
+	"Filesystem": setupFilesystemStorage,
 }
 
 var storageCleanup = map[string]func() error{
