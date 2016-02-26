@@ -1,24 +1,14 @@
 BASEDIR  = $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-APP      = $(shell basename ${PWD})
-PID      = $(BASEDIR)/${APP}.pid
-BIN      = $(BASEDIR)/${APP}.bin
+NAME = go-shorten/webapp
 
-GO_FILES = $(wildcard $(BASEDIR)/*.go)
+build:
+	docker build -t registry.dev.databricks.com/$(NAME) $(BASEDIR)
 
-serve: restart
-	@fswatch -o -Ee "\\.(git/|pid$$|bin$$)" . | xargs -n1 -I{}  make restart || make kill
+push:
+	docker push registry.dev.databricks.com/$(NAME)
 
-kill:
-	@kill $(shell cat $(PID)) || true
+restart_pods:
+	kubectl rolling-update go-shorten --image registry.dev.databricks.com/$(DOCKER_NAME):latest --update-period=5s
 
-before:
-	@echo "$(shell date -u +"%Y-%m-%dT%H:%M:%SZ"): restarting"
-
-$(BIN): $(GO_FILES)
-	@go build -o $@ $(GO_FILES)
-
-restart: kill before $(BIN)
-	@${BIN} & echo $$! > $(PID)
-
-.PHONY: serve restart kill before
+.PHONY: build push restart_pods
