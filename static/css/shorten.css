@@ -84,3 +84,51 @@ label {
 	left: 102px;
 	padding-left: 32px;
 }
+
+@media (max-width: 915px) {
+	h4 {
+		margin-bottom: 0;
+		font-size: 3rem;
+	}
+
+	.container {
+		padding-top: 0;
+	}
+
+	#code {
+		position: static;
+	}
+	.row {
+		flex-direction: column
+	}
+
+	/* @HACK(jengler) 2016-02-26 */
+	.row {
+		margin-left: -1rem;
+		width: calc(100% + 2.0rem);
+	}
+	.row .column {
+		margin-bottom: inherit;
+		padding: 0 1rem;
+		padding-left: 0;
+	}
+	.row .code-column {
+		position: absolute;
+		top: 40px;
+		left: 10px;
+	}
+	.row .go-column {
+		margin-left: 5px;
+	}
+	.row .url-column {
+		width: 284px;
+	}
+	.column.collapse-padding.to-column {
+		position: absolute;
+		top: 40px;
+		left: 245px;
+	}
+	#url {
+		padding-left: 4px;
+	}
+}
