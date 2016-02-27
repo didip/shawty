@@ -2,6 +2,7 @@ package storage
 
 import (
 	"crypto/sha512"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"path"
@@ -21,7 +22,7 @@ func NewS3(auth aws.Auth, region aws.Region, bucketName string) (*S3, error) {
 		Bucket: s3.New(auth, region).Bucket(bucketName),
 		hashFunc: func(s string) string {
 			h := sha512.Sum384([]byte(s))
-			return string(h[:])
+			return base64.StdEncoding.EncodeToString(h[:])
 		},
 	}
 
