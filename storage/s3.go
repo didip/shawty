@@ -13,8 +13,9 @@ import (
 )
 
 type S3 struct {
-	Bucket   *s3.Bucket
-	hashFunc func(string) string
+	Bucket         *s3.Bucket
+	hashFunc       func(string) string
+	storageVersion string
 }
 
 func NewS3(auth aws.Auth, region aws.Region, bucketName string) (*S3, error) {
@@ -24,6 +25,7 @@ func NewS3(auth aws.Auth, region aws.Region, bucketName string) (*S3, error) {
 			h := sha512.Sum384([]byte(s))
 			return base64.StdEncoding.EncodeToString(h[:])
 		},
+		storageVersion: "v2",
 	}
 
 	_, err := s.Bucket.GetBucketContents()
@@ -38,7 +40,7 @@ func (s *S3) saveKey(short, url string) (err error) {
 	hashedShort := s.hashFunc(short)
 
 	err = s.Bucket.Put(
-		path.Join(hashedShort, "long"),
+		path.Join(s.storageVersion, hashedShort, "long"),
 		[]byte(url),
 		"text/plain",
 		s3.BucketOwnerFull,
@@ -61,7 +63,7 @@ func (s *S3) saveKey(short, url string) (err error) {
 	}
 
 	err = s.Bucket.Put(
-		path.Join(hashedShort, "change_history", time.Now().Format(time.RFC3339Nano)),
+		path.Join(s.storageVersion, hashedShort, "change_history", time.Now().Format(time.RFC3339Nano)),
 		changeLog,
 		"application/json",
 		s3.BucketOwnerFull,
@@ -85,8 +87,10 @@ func (s *S3) Save(url string) (string, error) {
 
 	for i := 0; i < 10; i++ {
 		short = getRandomString(8)
+		pathToShort := path.Join(s.storageVersion, s.hashFunc(short))
+		// pathToShort := path.Join(s.storageVersion, s.hashFunc(short), "long")
 
-		if _, err = s.Bucket.GetKey(short); err != nil {
+		if _, err = s.Bucket.GetKey(pathToShort); err != nil {
 			return short, s.saveKey(short, url)
 		}
 	}
@@ -110,7 +114,7 @@ func (s *S3) Load(short string) (string, error) {
 		return "", err
 	}
 
-	url, err := s.Bucket.Get(path.Join(s.hashFunc(short), "long"))
+	url, err := s.Bucket.Get(path.Join(s.storageVersion, s.hashFunc(short), "long"))
 	if s3err, ok := err.(*s3.Error); ok && s3err.Code == "NoSuchKey" {
 		return "", ErrShortNotSet
 	}
