@@ -27,8 +27,8 @@ func (s *Filesystem) Code(url string) string {
 }
 
 func (s *Filesystem) Save(url string) (string, error) {
-	if url == "" {
-		return "", ErrURLEmpty
+	if _, err := validateURL(url); err != nil {
+		return "", err
 	}
 
 	code := s.Code(url)
@@ -57,18 +57,18 @@ func FlattenPath(path string, separator string) string {
 	return strings.Replace(path, string(os.PathSeparator), separator, -1)
 }
 
-func (s *Filesystem) SaveName(short, long string) error {
-	if short == "" {
-		return ErrNameEmpty
+func (s *Filesystem) SaveName(short, url string) error {
+	if err := validateShort(short); err != nil {
+		return err
 	}
-	if long == "" {
-		return ErrURLEmpty
+	if _, err := validateURL(url); err != nil {
+		return err
 	}
 
 	short = FlattenPath(CleanPath(short), "_")
 
 	s.mu.Lock()
-	err := ioutil.WriteFile(filepath.Join(s.Root, short), []byte(long), 0744)
+	err := ioutil.WriteFile(filepath.Join(s.Root, short), []byte(url), 0744)
 	if err == nil {
 		s.c++
 	}
@@ -77,19 +77,19 @@ func (s *Filesystem) SaveName(short, long string) error {
 	return err
 }
 
-func (s *Filesystem) Load(code string) (string, error) {
-	if code == "" {
-		return "", ErrNameEmpty
+func (s *Filesystem) Load(short string) (string, error) {
+	if err := validateShort(short); err != nil {
+		return "", err
 	}
 
-	code = FlattenPath(CleanPath(code), "_")
+	short = FlattenPath(CleanPath(short), "_")
 
 	s.mu.Lock()
-	urlBytes, err := ioutil.ReadFile(filepath.Join(s.Root, code))
+	urlBytes, err := ioutil.ReadFile(filepath.Join(s.Root, short))
 	s.mu.Unlock()
 
 	if _, ok := err.(*os.PathError); ok {
-		return "", ErrCodeNotSet
+		return "", ErrShortNotSet
 	}
 
 	return string(urlBytes), err

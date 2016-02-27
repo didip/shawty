@@ -19,8 +19,8 @@ func NewInmem() (*Inmem, error) {
 }
 
 func (s *Inmem) Save(url string) (string, error) {
-	if url == "" {
-		return "", ErrURLEmpty
+	if _, err := validateURL(url); err != nil {
+		return "", err
 	}
 
 	var code string
@@ -37,33 +37,33 @@ func (s *Inmem) Save(url string) (string, error) {
 		}
 	}
 
-	return "", ErrCodeInUse
+	return "", ErrShortInUse
 }
 
-func (s *Inmem) SaveName(code string, url string) error {
-	if code == "" {
-		return ErrNameEmpty
+func (s *Inmem) SaveName(short string, url string) error {
+	if err := validateShort(short); err != nil {
+		return err
 	}
-	if url == "" {
-		return ErrURLEmpty
+	if _, err := validateURL(url); err != nil {
+		return err
 	}
 
 	s.mu.Lock()
-	s.m[code] = url
+	s.m[short] = url
 	s.mu.Unlock()
 	return nil
 }
 
-func (s *Inmem) Load(code string) (string, error) {
-	if code == "" {
-		return "", ErrNameEmpty
+func (s *Inmem) Load(short string) (string, error) {
+	if err := validateShort(short); err != nil {
+		return "", err
 	}
 
 	s.mu.Lock()
-	url, ok := s.m[code]
+	url, ok := s.m[short]
 	s.mu.Unlock()
 	if !ok {
-		return "", ErrCodeNotSet
+		return "", ErrShortNotSet
 	}
 
 	return url, nil

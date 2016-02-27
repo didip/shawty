@@ -23,48 +23,48 @@ func NewS3(auth aws.Auth, region aws.Region, bucketName string) (*S3, error) {
 }
 
 func (s *S3) Save(url string) (string, error) {
-	if url == "" {
-		return "", ErrURLEmpty
+	if _, err := validateURL(url); err != nil {
+		return "", err
 	}
 
 	var (
-		code string
-		err  error
+		short string
+		err   error
 	)
 
 	for i := 0; i < 10; i++ {
-		code = getRandomString(8)
+		short = getRandomString(8)
 
-		if _, err = s.Bucket.GetKey(code); err != nil {
-			err = s.Bucket.Put(code, []byte(url), "text/plain", s3.BucketOwnerFull)
+		if _, err = s.Bucket.GetKey(short); err != nil {
+			err = s.Bucket.Put(short, []byte(url), "text/plain", s3.BucketOwnerFull)
 			if err == nil {
-				return code, err
+				return short, nil
 			}
 		}
 	}
 
-	return "", ErrCodeNotSet
+	return "", ErrShortNotSet
 }
 
-func (s *S3) SaveName(code string, url string) error {
-	if code == "" {
-		return ErrNameEmpty
+func (s *S3) SaveName(short string, url string) error {
+	if err := validateShort(short); err != nil {
+		return err
 	}
-	if url == "" {
-		return ErrURLEmpty
+	if _, err := validateURL(url); err != nil {
+		return err
 	}
 
-	return s.Bucket.Put(code, []byte(url), "text/plain", s3.BucketOwnerFull)
+	return s.Bucket.Put(short, []byte(url), "text/plain", s3.BucketOwnerFull)
 }
 
-func (s *S3) Load(code string) (string, error) {
-	if code == "" {
-		return "", ErrNameEmpty
+func (s *S3) Load(short string) (string, error) {
+	if err := validateShort(short); err != nil {
+		return "", err
 	}
 
-	url, err := s.Bucket.Get(code)
+	url, err := s.Bucket.Get(short)
 	if s3err, ok := err.(*s3.Error); ok && s3err.Code == "NoSuchKey" {
-		return "", ErrCodeNotSet
+		return "", ErrShortNotSet
 	}
 	return string(url), err
 }
