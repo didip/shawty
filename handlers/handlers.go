@@ -46,9 +46,9 @@ func SetShortHandler(store storage.Storage) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		// Get URL from post params based on Content-Type
 		var (
-			url string
+			url  string
 			code string
-			err error
+			err  error
 		)
 		switch r.Header.Get("Content-Type") {
 		case "application/json":
@@ -83,7 +83,8 @@ func SetShortHandler(store storage.Storage) httprouter.Handle {
 			err = named.SaveName(code, url)
 		}
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Storage layer failed to save link: %s", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Storage layer failed to save '%s' to '%s' because: %s", url, code, err), http.StatusInternalServerError)
+			return
 		}
 
 		// Return the short code formatted based on Accept headers
