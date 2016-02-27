@@ -83,7 +83,7 @@ func SetShortHandler(store storage.Storage) httprouter.Handle {
 			err = named.SaveName(code, url)
 		}
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Storage layer failed to save '%s' to '%s' because: %s", url, code, err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to save '%s' to '%s' because: %s", url, code, err), http.StatusInternalServerError)
 			return
 		}
 
