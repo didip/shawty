@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"log"
+	"regexp"
 	"sync"
 
 	"github.com/mitchellh/goamz/s3"
@@ -16,7 +17,9 @@ import (
 //	                              TimeInRFC3339Nano() -> {URL: oldURL, Owner: "TODO"}
 // from this:
 //	short -> url
-func MigrateS3FromV1ToV2(storage *storage.S3, forreal bool) {
+func MigrateS3FromV1ToV2(storage *storage.S3, writenew bool, deleteold bool) {
+	log.Println("Begining S3 migration from v1 design to v2")
+
 	s3b := storage.Bucket
 
 	var (
@@ -25,37 +28,48 @@ func MigrateS3FromV1ToV2(storage *storage.S3, forreal bool) {
 	)
 
 	for retryCount := 0; retryCount < 10; {
-		resp, err := s3b.List("/", "/", marker, 1000)
+		resp, err := s3b.List("", "", marker, 1000)
 		if err != nil {
 			log.Println("Failed to list S3 bucket because: %v", err)
 			retryCount++
 			continue
 		}
 
+		log.Printf("List found %v available items", len(resp.Contents))
 		for _, k := range resp.Contents {
+			log.Println(k.Key)
+			if matched, err := regexp.MatchString("^v\\d+\\/.+", k.Key); matched && err == nil {
+				log.Printf("Skipping '%v' because it looks like a versioned key", k.Key)
+				continue
+			} else if err != nil {
+				log.Println(err)
+			}
+
 			wg.Add(1)
-			go func(k *s3.Key) {
+			go func(k s3.Key) {
 				defer wg.Done()
 
 				b, err := s3b.Get(k.Key)
 				if err != nil {
-					log.Println("Failed to get url from key '%s' because: %v", k.Key, err)
+					log.Printf("Failed to get url from key '%s' because: %v", k.Key, err)
 					return
 				}
 
 				short := k.Key
 				url := string(b)
 
-				log.Println("Migrating the pair '%v'->'%v' to its new home", short, url)
-				if forreal {
+				log.Printf("Migrating the pair '%v'->'%v' to its new home", short, url)
+				if writenew {
 					err = storage.SaveName(short, url)
 					if err != nil {
-						log.Println("Failed to migrate short '%s' to its new home because: %s", err)
+						log.Printf("Failed to migrate short '%s' to its new home because: %s", short, err)
 						return // This is pretty important :D
 					}
 
-					if err := s3b.Del(short); err != nil {
-						log.Println("Failed to clean out old short code '%s' because: %s", short, err)
+					if deleteold {
+						if err := s3b.Del(short); err != nil {
+							log.Printf("Failed to clean out old short code '%s' because: %s", short, err)
+						}
 					}
 				}
 			}(k)
