@@ -11,7 +11,7 @@ import (
 
 // This function is designed to assist with migrating an S3 storage with
 // migrating from the original implementation to the V2 design. I.e. get to this:
-//	 sha384(short)/
+//	 sha256(short)/
 //	               long -> url
 //	               change_history/
 //	                              TimeInRFC3339Nano() -> {URL: oldURL, Owner: "TODO"}
@@ -37,12 +37,9 @@ func MigrateS3FromV1ToV2(storage *storage.S3, writenew bool, deleteold bool) {
 
 		log.Printf("List found %v available items", len(resp.Contents))
 		for _, k := range resp.Contents {
-			log.Println(k.Key)
-			if matched, err := regexp.MatchString("^v\\d+\\/.+", k.Key); matched && err == nil {
+			if isVersionedKey(k.Key) {
 				log.Printf("Skipping '%v' because it looks like a versioned key", k.Key)
 				continue
-			} else if err != nil {
-				log.Println(err)
 			}
 
 			wg.Add(1)
@@ -83,4 +80,13 @@ func MigrateS3FromV1ToV2(storage *storage.S3, writenew bool, deleteold bool) {
 			break
 		}
 	}
+}
+
+var versionedKey = regexp.MustCompile("^v\\d+\\/.+")
+
+func isVersionedKey(key string) bool {
+	if versionedKey.MatchString(key) {
+		return true
+	}
+	return false
 }
