@@ -23,13 +23,11 @@ func main() {
 
 	r := httprouter.New()
 
-	r.GET("/:short", handlers.GetShortHandler(store))
-	r.HEAD("/:short", handlers.GetShortHandler(store))
+	r.GET("/*short", handlers.GetShortHandler(store))
+	r.HEAD("/*short", handlers.GetShortHandler(store))
 
-	r.POST("/", handlers.SetShortHandler(store))
-	r.PUT("/", handlers.SetShortHandler(store))
-	r.POST("/:short", handlers.SetShortHandler(store))
-	r.PUT("/:short", handlers.SetShortHandler(store))
+	r.POST("/*short", handlers.SetShortHandler(store))
+	r.PUT("/*short", handlers.SetShortHandler(store))
 
 	n.UseHandler(r)
 
