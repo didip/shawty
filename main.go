@@ -2,35 +2,46 @@ package main
 
 import (
 	"log"
+	"net"
 	"net/http"
 	"os"
-	"path/filepath"
-	"runtime"
 
-	"github.com/didip/shawty/handlers"
-	"github.com/didip/shawty/storages"
-	"github.com/mitchellh/go-homedir"
+	"github.com/codegangsta/negroni"
+	"github.com/julienschmidt/httprouter"
+	"github.com/thomaso-mirodin/go-shorten/handlers"
+	"github.com/thomaso-mirodin/go-shorten/storage"
 )
 
 func main() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	dir, _ := homedir.Dir()
-	storage := &storages.Filesystem{}
-	err := storage.Init(filepath.Join(dir, "shawty"))
+	store, err := storage.NewInmem()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create inmem storage because '%s'", err)
+
 	}
 
-	http.Handle("/", handlers.EncodeHandler(storage))
-	http.Handle("/dec/", handlers.DecodeHandler(storage))
-	http.Handle("/red/", handlers.RedirectHandler(storage))
+	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger(), negroni.NewStatic(http.Dir("static")))
+
+	r := httprouter.New()
+
+	r.GET("/*short", handlers.GetShortHandler(store))
+	r.HEAD("/*short", handlers.GetShortHandler(store))
+
+	r.POST("/*short", handlers.SetShortHandler(store))
+	r.PUT("/*short", handlers.SetShortHandler(store))
+
+	n.UseHandler(r)
+
+	host := os.Getenv("HOST")
+	if host == "" {
+		host = "localhost"
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
-	err = http.ListenAndServe(":"+port, nil)
+
+	err = http.ListenAndServe(net.JoinHostPort(host, port), n)
 	if err != nil {
 		log.Fatal(err)
 	}
