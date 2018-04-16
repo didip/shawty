@@ -45,3 +45,14 @@ But this project exists to demonstrate:
     Time per request:       0.086 [ms] (mean, across all concurrent requests)
     Transfer rate:          2540.74 [Kbytes/sec] received
     ```
+
+
+### My other Go libraries
+
+* [Tollbooth](https://github.com/didip/tollbooth): Simple middleware to rate-limit HTTP requests.
+
+* [Gomet](https://github.com/didip/gomet): Simple HTTP client & server long poll library for Go. Useful for receiving live updates without needing Websocket.
+
+* [Stopwatch](https://github.com/didip/stopwatch): A small library to measure latency of things. Useful if you want to report latency data to Graphite.
+
+* [LaborUnion](https://github.com/didip/laborunion): A dynamic worker pool library.
